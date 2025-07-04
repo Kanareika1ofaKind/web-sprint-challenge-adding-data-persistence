@@ -11,8 +11,9 @@ const server = express()
 
 server.use(express.json())
 
-server.use("/api/project", projectRouter)
-
+server.use("api/projects", projectRouter); // mount project router
+server.use("api/tasks", taskRouter); // mount task router
+server.use("api/resources", resourceRouter); // mount resource router
 server.get("/", (req, res) => {
   res.status(200).json({ api: "up" })
 })
