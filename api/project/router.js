@@ -1,4 +1,5 @@
 // build your `/api/projects` router here
+
 const express = require('express');
 const router = express.Router();
 
@@ -7,65 +8,56 @@ const Projects = require('./model.js'); // import the model
 // GET all projects
 
 router.get('/', async (req, res) => {
-  try {
-    const projects = await Projects.getAll();
-    res.status(200).json(projects);
-  } catch (error) {
-    res.status(500).json({ message: 'Error retrieving projects', error });
-  }
-});
-
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const project = await Projects.getById(id);
-    if (project) {
-      res.status(200).json(project);
-    } else {
-      res.status(404).json({ message: 'Project not found' });
+    try {
+        const projects = await Projects.getAll();
+        res.status(200).json(projects);
+    } catch (error) {
+        next({ status: 500, message: 'Error retrieving projects', error }); // pass error to the error handler
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Error retrieving project', error });
-  }
 });
 
-router.post('/', async (req, res) => {
-  const projectData = req.body;
-  try {
-    const newProject = await Projects.create(projectData);
-    res.status(201).json(newProject);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating project', error });
-  }
-});
+router.get('/:prod_id', async (req, res, next) => {
+    const { prod_id } = req.params;
+    try {
+        const project = await Projects.getById(prod_id);
+        if (project) {
+            res.status(200).json(project);
+        } else {
 
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const projectData = req.body;
-  try {
-    const updatedProject = await Projects.update(id, projectData);
-    if (updatedProject) {
-      res.status(200).json(updatedProject);
-    } else {
-      res.status(404).json({ message: 'Project not found' });
+            next({ status: 404, message: 'Project not found' }); // pass error to the error handler
+        }
+    } catch (error) {
+        next({ status: 500, message: 'Error retrieving project', error }); // pass error to the error handler
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating project', error });
-  }
 });
 
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const deletedProject = await Projects.remove(id);
-    if (deletedProject) {
-      res.status(200).json({ message: 'Project deleted successfully' });
-    } else {
-      res.status(404).json({ message: 'Project not found' });
+router.post('/', async (req, res, next) => {
+
+    //"project_name":"bar","project_description":null,"project_completed":false}
+    const { project_name, project_description, project_completed } = req.body;
+
+    if (!project_name) {
+        next({ status: 400, message: 'Project name is required' }); // pass error to the error handler
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting project', error });
-  }
-}
-);
+
+    try {
+        const newProject = {
+            project_name,
+            project_description: project_description || null, // default to null if not provided
+            project_completed: project_completed || false // default to false if not provided
+        };
+        const createdProject = await Projects.create(newProject);
+        if (createdProject) {
+            res.status(201).json(createdProject); // return the created project
+        }
+        else {
+            next({ status: 500, message: 'Error creating project' }); // pass error to the error handler
+        }
+
+    } catch (error) {
+        next({ status: 500, message: 'Error creating project', error }); // pass error to the error handler
+    }
+});
+
 module.exports = router; // export the router to be used in the server file
+
