@@ -22,7 +22,7 @@ async function getAll() {
         task_id: task.task_id,
         task_description: task.task_description,
         task_notes: task.task_notes || null, // ensure null if not provided
-        task_completed: task.task_completed ? true : false, // ensure boolean value
+        task_completed: Boolean(task.task_completed), // ensure boolean value
         project_id: task.project_id,
         project_name: task.project_name, // include project name for context
         project_description: task.project_description || null // ensure null if not provided
@@ -53,7 +53,7 @@ async function findById(task_id) {
         task_id: task.task_id,
         task_description: task.task_description,
         task_notes: task.task_notes || null, // ensure null if not provided
-        task_completed: task.task_completed ? true : false, // ensure boolean value
+        task_completed: Boolean(task.task_completed), // ensure boolean value
         project_id: task.project_id,
         project_name: task.project_name, // include project name for context
         project_description: task.project_description || null // ensure null if not provided

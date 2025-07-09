@@ -25,7 +25,6 @@ async function getById(res_id) {
 async function create(resourceData) {
 
     const [id] = await db('resources').insert(resourceData); // insert the resource and get the id
-    console.log('Created resource with ID:', id, resourceData); // log the created resource id
     return getById(id); // return the created resource by id
 }
 
