@@ -35,8 +35,8 @@ router.post('/', async (req, res, next) => {
     const { task_description, task_notes, task_completed, project_id } = req.body; // destructure the request body
 
     if (!task_description || !project_id) { // validate required fields
-        return res.status(400).json({ message: 'task_description and project_id are required' });
-    }
+    next({ status: 400, message: 'task_description and project_id are required' });
+}
 
     try {
 

@@ -61,23 +61,16 @@ async function findById(task_id) {
 
 }
 
-
-
-
-
 async function create(taskData) {
 
     const { task_description, task_notes, task_completed, project_id } = taskData;
 
-    if (!task_description || !project_id) {
-        throw new Error('task_description and project_id are required'); // Validate required fields
-    }
 
     // Insert the new task into the database
     const [id] = await db('tasks').insert({
         task_description,
         task_notes: task_notes || null,
-        task_completed: task_completed ? true : false, // ensure boolean value
+        task_completed: Boolean(task_completed), // ensure boolean value
         project_id
     });
 
